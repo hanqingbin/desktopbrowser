@@ -6,7 +6,7 @@ function getParam() {
   let param = {
     'BIN_PATH': '',
     'APP_PATH': '',
-    'TRTC_ENV': 'production',
+    'AIO_ENV': 'production',
   };
   let tmp = Array.from(process.argv);
   param.BIN_PATH = tmp[0];
@@ -44,12 +44,12 @@ function createWindow() {
 
   // 在执行 npm run start 后，经常会窗口已经显示出来了，但代码还未构建好，此时捕获到 did-fail-load 事件，在之后延迟重载 
   win.webContents.on('did-fail-load', function () {
-    console.log(`createWindow: did-fail-load, reload ${param.TRTC_ENV} soon...`);
+    console.log(`createWindow: did-fail-load, reload ${param.AIO_ENV} soon...`);
     setTimeout(() => {
       win.reload();
     }, 1000);
   });
-  if (param.TRTC_ENV === 'production') {
+  if (param.AIO_ENV === 'production') {
     win.loadFile('dist/index.html');
   } else {
     win.loadURL(gerServer());
