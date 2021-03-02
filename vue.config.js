@@ -22,13 +22,13 @@ function getArgvToObject() {
 
 let param = getArgvToObject();
 
-if (!param.TRTC_ENV) {
-  param.TRTC_ENV = 'development'
+if (!param.AIO_ENV) {
+  param.AIO_ENV = 'development'
 }
 
-if ( !param.TRTC_ENV || !['production', 'development'].includes(param.TRTC_ENV)) {
-  console.log('TRTC_ENV set default: development');
-  param.TRTC_ENV = 'development'
+if ( !param.AIO_ENV || !['production', 'development'].includes(param.AIO_ENV)) {
+  console.log('AIO_ENV set default: development');
+  param.AIO_ENV = 'development'
 }
 
 if (!param.TARGET_PLATFORM || !['darwin', 'win32'].includes(param.TARGET_PLATFORM)) {
