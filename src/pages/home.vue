@@ -1,9 +1,9 @@
 <template>
 <div id="home">
     <div class="back-home" draggable="true" :style="style" @dragend="dragend($event,1)" @touchstart="touchStart" @touchmove='touchMove' @touchend='touchEnd'>
-        <img src="@/assets/back.png" alt="" @click="goBackWebView">
+        <!-- <img src="@/assets/back.png" alt="" @click="goBackWebView">
         <img src="@/assets/fresh.png" alt="" @click="refresh">
-        <img src="@/assets/font.png" alt="" @click="goForwardWebView">
+        <img src="@/assets/font.png" alt="" @click="goForwardWebView"> -->
         <img src="@/assets/home.png" alt="" @click="goIndex">
     </div>
     <!-- <div class="head">
@@ -13,11 +13,14 @@
         <button @click="refresh">刷新</button>
     </div> -->
     <!-- <button @click="open">打开</button> -->
-    <webview class="frame" :style="'height:' + webViewHeight + 'px'" id="wb" :src="url"  plugins />
+    <webview class="frame" :style="'height:' + webViewHeight + 'px'" id="wb" :src="url" plugins />
 </div>
 </template>
 
 <script>
+const {
+    ipcRenderer
+} = window.require('electron')
 export default {
     data() {
         return {
@@ -61,9 +64,12 @@ export default {
         webview.addEventListener('dom-ready', () => {
             const webContents = webview.getWebContents();
             webContents.on('new-window', (event, url) => {
-                sessionStorage.setItem('navUrl', url)
-                event.preventDefault();
-                webview.loadURL(url);
+                console.log(url)
+                // sessionStorage.setItem('navUrl', url)
+                // event.preventDefault();
+                // webview.loadURL(url);
+
+                ipcRenderer.send('openCalendarWindow', url)
             });
         });
     },
@@ -180,27 +186,32 @@ export default {
 .frame {
     width: 100%;
 }
-  .back-home {
+
+.back-home {
     position: fixed;
     top: 100px;
     right: 20px;
-  }
-  .back-pre {
+}
+
+.back-pre {
     position: fixed;
     top: 100px;
     right: 320px;
-  }
-  .back-fresh {
+}
+
+.back-fresh {
     position: fixed;
     top: 100px;
     right: 220px;
-  }
-  .back-font {
+}
+
+.back-font {
     position: fixed;
     top: 100px;
     right: 120px;
-  }
-  img {
-      width: 86px;
-    }
+}
+
+img {
+    width: 86px;
+}
 </style>

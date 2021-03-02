@@ -1,5 +1,6 @@
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const {resolve} = require('path')
+let win = null
 Menu.setApplicationMenu(null)
 function getParam() {
   let param = {
@@ -30,13 +31,14 @@ function gerServer() {
 
 function createWindow() {
   // 创建浏览器窗口
-  let win = new BrowserWindow({
+  win = new BrowserWindow({
     fullscreen: true,
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
       plugins: true,
-      webSecurity: false
+      webSecurity: false,
+      enableRemoteModule: true
     }
   });
 
@@ -67,3 +69,33 @@ app.commandLine.appendSwitch('ppapi-flash-path', plugins)
 app.commandLine.appendSwitch('ppapi-flash-version', '26.0.0.131')
 
 app.whenReady().then(createWindow);
+
+let calendarWin;
+// 创建calendar窗口方法
+function openCalendarWindow (args) {
+  console.log(args)
+    calendarWin = new BrowserWindow({
+      fullscreen: false,
+        width: 1366,
+        height: 768,
+        minimizable:false,
+        parent: win, // win是主窗口
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+    calendarWin.loadURL(args);
+    calendarWin.on('closed', () => { calendarWin = null })
+}
+ipcMain.on('openCalendarWindow', (e ,args) =>
+    openCalendarWindow(args)
+);
+
+//关闭当前多窗口
+ipcMain.on('closeCalendarWindow', e =>
+    calendarWin.close()
+);
+//最小化当前多窗口
+ipcMain.on('minimizeCalendarWindow', e =>
+    calendarWin.minimize()
+);
