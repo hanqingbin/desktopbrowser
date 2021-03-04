@@ -1,9 +1,9 @@
 <template>
 <div id="home">
     <div class="back-home" draggable="true" :style="style" @dragend="dragend($event,1)" @touchstart="touchStart" @touchmove='touchMove' @touchend='touchEnd'>
-        <!-- <img src="@/assets/back.png" alt="" @click="goBackWebView">
+        <!-- <img src="@/assets/back.png" alt="" @click="goBackWebView"> -->
         <img src="@/assets/fresh.png" alt="" @click="refresh">
-        <img src="@/assets/font.png" alt="" @click="goForwardWebView"> -->
+        <!-- <img src="@/assets/font.png" alt="" @click="goForwardWebView"> -->
         <img src="@/assets/home.png" alt="" @click="goIndex">
     </div>
     <!-- <div class="head">
@@ -107,7 +107,7 @@ export default {
         },
         refresh() {
             let webview = document.querySelector('webview')
-            webview.reload()
+            webview.reloadIgnoringCache()
         },
         dragend(e, val) {
             if (val === 1) {
