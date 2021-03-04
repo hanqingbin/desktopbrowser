@@ -4,7 +4,7 @@
         <!-- <img src="@/assets/back.png" alt="" @click="goBackWebView">
         <img src="@/assets/fresh.png" alt="" @click="refresh">
         <img src="@/assets/font.png" alt="" @click="goForwardWebView"> -->
-        <img src="@/assets/home.png" alt="" @click="goIndex">
+        <!-- <img src="@/assets/home.png" alt="" @click="goIndex"> -->
     </div>
     <!-- <div class="head">
         <button @click="goIndex">回到首页</button>
@@ -58,6 +58,8 @@ export default {
         // window.location.href = "https://qujiangzc.odrcloud.cn"
         if (this.$route.query.url) {
             this.url = this.$route.query.url
+        }else{
+            this.url = 'http://122.51.213.5'
         }
         this.webViewHeight = window.screen.height
         let webview = document.querySelector('webview')

@@ -73,18 +73,22 @@ app.whenReady().then(createWindow);
 let calendarWin;
 // 创建calendar窗口方法
 function openCalendarWindow (args) {
-  console.log(args)
     calendarWin = new BrowserWindow({
-      fullscreen: false,
-        width: 1366,
-        height: 768,
+        fullscreen: false,
+        width:1920,
+        height:1080,
         minimizable:false,
+        maximizable:false,
+        resizable:false,
+        movable:false,
+        alwaysOnTop:true,
         parent: win, // win是主窗口
         webPreferences: {
             nodeIntegration: true
         }
     })
     calendarWin.loadURL(args);
+    calendarWin.maximize(); 
     calendarWin.on('closed', () => { calendarWin = null })
 }
 ipcMain.on('openCalendarWindow', (e ,args) =>
