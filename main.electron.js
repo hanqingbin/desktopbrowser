@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const { app, BrowserWindow, BrowserView, Menu, ipcMain } = require('electron')
 const {resolve} = require('path')
 let win = null
 Menu.setApplicationMenu(null)
@@ -36,6 +36,9 @@ function createWindow() {
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
+      minimizable:false,
+      maximizable:false,
+      closable:false,
       plugins: true,
       webSecurity: false,
       enableRemoteModule: true
@@ -51,6 +54,7 @@ function createWindow() {
   });
   if (param.AIO_ENV === 'production') {
     win.loadFile('dist/index.html');
+    // win.webContents.openDevTools();
   } else {
     win.loadURL(gerServer());
     win.webContents.openDevTools();
@@ -73,23 +77,50 @@ app.whenReady().then(createWindow);
 let calendarWin;
 // 创建calendar窗口方法
 function openCalendarWindow (args) {
+  console.log(args)
     calendarWin = new BrowserWindow({
-        fullscreen: false,
-        width:1920,
-        height:1080,
+      width:1920,
+      height:1080,
+      movable:false,
+      fullscreen: false,
+      resizable:false,
+      alwaysOnTop:true,
         minimizable:false,
-        maximizable:false,
-        resizable:false,
-        movable:false,
-        alwaysOnTop:true,
         parent: win, // win是主窗口
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: false
         }
     })
     calendarWin.loadURL(args);
-    calendarWin.maximize(); 
+    calendarWin.maximize();
+    // calendarWin.webContents.openDevTools();
     calendarWin.on('closed', () => { calendarWin = null })
+    calendarWin.webContents.on('new-window', (event, url) => {
+      initNewWindow(event, url)
+      })
+}
+const initNewWindow = (event, url) => {
+  event.preventDefault()
+      const chindWin = new BrowserWindow({
+          width:1920,
+          height:1080,
+          movable:false,
+          fullscreen: false,
+          minimizable:false,
+          resizable:false,
+          alwaysOnTop:true,
+          parent: win, // win是主窗口
+          webPreferences: {
+              nodeIntegration: false
+          }
+      })
+      chindWin.loadURL(url);
+      chindWin.maximize();
+      // chindWin.on('closed', () => { chindWin = null })
+      chindWin.webContents.on('new-window', (event, url) => {
+        initNewWindow(event,url)
+      })
+      event.newGuest = chindWin
 }
 ipcMain.on('openCalendarWindow', (e ,args) =>
     openCalendarWindow(args)

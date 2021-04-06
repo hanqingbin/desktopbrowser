@@ -9,7 +9,7 @@
 export default {
     data() {
         return {
-            url: 'http://106.54.206.63/'
+            url: 'https://www.hao123.com'
         }
     },
     methods: {
