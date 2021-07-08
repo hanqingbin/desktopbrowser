@@ -55,12 +55,25 @@ export default {
         }
     },
     mounted() {
+        let that = this
         // window.location.href = "https://qujiangzc.odrcloud.cn"
         if (this.$route.query.url) {
             this.url = this.$route.query.url
         }else{
-            this.url = 'http://122.51.213.5'
+            // this.url = 'http://106.54.5.145:18083/'
+            ipcRenderer.send("readConfig-message", "传递回去ping");
         }
+        ipcRenderer.on("readConfig-reply", function(event, arg) {
+        // 这里的arg是从主线程请求的数据
+            try{
+                let configJSON = JSON.parse(arg)
+                console.log(arg)
+                that.url = configJSON.url
+            }catch(err){
+                console.log(err)
+                that.url = 'http://122.51.213.5'
+            }
+        });
         this.webViewHeight = window.screen.height
         let webview = document.querySelector('webview')
         webview.addEventListener('dom-ready', () => {

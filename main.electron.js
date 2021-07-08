@@ -1,5 +1,6 @@
-const { app, BrowserWindow, BrowserView, Menu, ipcMain } = require('electron')
-const {resolve} = require('path')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const { resolve } = require('path')
+const fs = require('fs')
 let win = null
 Menu.setApplicationMenu(null)
 function getParam() {
@@ -36,9 +37,9 @@ function createWindow() {
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
-      minimizable:false,
-      maximizable:false,
-      closable:false,
+      minimizable: false,
+      maximizable: false,
+      closable: false,
       plugins: true,
       webSecurity: false,
       enableRemoteModule: true
@@ -62,7 +63,7 @@ function createWindow() {
 }
 
 // 指定 flash 路径，假定它与 main.js 放在同一目录中。
-let plugins =  resolve(__dirname, './lib/pepflashplayer64.dll')
+let plugins = resolve(__dirname, './lib/pepflashplayer64.dll')
 
 if (__dirname.includes(".asar")) {
   plugins = require('path').join(process.resourcesPath + '/lib/pepflashplayer64.dll')
@@ -76,61 +77,81 @@ app.whenReady().then(createWindow);
 
 let calendarWin;
 // 创建calendar窗口方法
-function openCalendarWindow (args) {
+function openCalendarWindow(args) {
   console.log(args)
-    calendarWin = new BrowserWindow({
-      width:1920,
-      height:1080,
-      movable:false,
-      fullscreen: false,
-      resizable:false,
-      alwaysOnTop:true,
-        minimizable:false,
-        parent: win, // win是主窗口
-        webPreferences: {
-            nodeIntegration: false
-        }
-    })
-    calendarWin.loadURL(args);
-    calendarWin.maximize();
-    // calendarWin.webContents.openDevTools();
-    calendarWin.on('closed', () => { calendarWin = null })
-    calendarWin.webContents.on('new-window', (event, url) => {
-      initNewWindow(event, url)
-      })
+  calendarWin = new BrowserWindow({
+    width: 1920,
+    height: 1080,
+    movable: false,
+    fullscreen: false,
+    resizable: false,
+    alwaysOnTop: true,
+    minimizable: false,
+    parent: win, // win是主窗口
+    webPreferences: {
+      nodeIntegration: false
+    }
+  })
+  calendarWin.loadURL(args);
+  calendarWin.maximize();
+  calendarWin.webContents.openDevTools();
+  calendarWin.on('closed', () => { calendarWin = null })
+  calendarWin.webContents.on('new-window', (event, url) => {
+    initNewWindow(event, url)
+  })
 }
 const initNewWindow = (event, url) => {
   event.preventDefault()
-      const chindWin = new BrowserWindow({
-          width:1920,
-          height:1080,
-          movable:false,
-          fullscreen: false,
-          minimizable:false,
-          resizable:false,
-          alwaysOnTop:true,
-          parent: win, // win是主窗口
-          webPreferences: {
-              nodeIntegration: false
-          }
-      })
-      chindWin.loadURL(url);
-      chindWin.maximize();
-      // chindWin.on('closed', () => { chindWin = null })
-      chindWin.webContents.on('new-window', (event, url) => {
-        initNewWindow(event,url)
-      })
-      event.newGuest = chindWin
+  const chindWin = new BrowserWindow({
+    width: 1920,
+    height: 1080,
+    movable: false,
+    fullscreen: false,
+    minimizable: false,
+    resizable: false,
+    alwaysOnTop: true,
+    parent: win, // win是主窗口
+    webPreferences: {
+      nodeIntegration: false
+    }
+  })
+  chindWin.loadURL(url);
+  chindWin.maximize();
+  // chindWin.on('closed', () => { chindWin = null })
+  chindWin.webContents.on('new-window', (event, url) => {
+    initNewWindow(event, url)
+  })
+  event.newGuest = chindWin
 }
-ipcMain.on('openCalendarWindow', (e ,args) =>
-    openCalendarWindow(args)
+ipcMain.on('openCalendarWindow', (e, args) =>
+  openCalendarWindow(args)
 );
 
 //关闭当前多窗口
 ipcMain.on('closeCalendarWindow', e =>
-    calendarWin.close()
+  calendarWin.close()
 );
 //最小化当前多窗口
 ipcMain.on('minimizeCalendarWindow', e =>
-    calendarWin.minimize()
+  calendarWin.minimize()
 );
+
+ipcMain.on('readConfig-message', function (event, arg) {
+  // arg是从渲染进程返回来的数据
+  console.log(arg);
+
+  // 这里是传给渲染进程的数据
+  let configPath = resolve(__dirname, './lib/config.json')
+
+if (__dirname.includes(".asar")) {
+  configPath = require('path').join(process.resourcesPath + '/lib/config.json')
+}
+  fs.readFile(configPath, "utf8", (err, data) => {
+    if (err) {
+      event.sender.send('readConfig-reply',err);
+    } else {
+      event.sender.send('readConfig-reply', data);
+    }
+
+  })
+});
