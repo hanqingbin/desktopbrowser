@@ -33,7 +33,12 @@ function gerServer() {
 function createWindow() {
   // 创建浏览器窗口
   win = new BrowserWindow({
-    fullscreen: true,
+    fullscreen: false,
+    width:1920,
+      height:1080,
+      x:1921,
+      y:0,
+      frame:false,
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
@@ -45,7 +50,6 @@ function createWindow() {
       enableRemoteModule: true
     }
   });
-
   // 在执行 npm run start 后，经常会窗口已经显示出来了，但代码还未构建好，此时捕获到 did-fail-load 事件，在之后延迟重载 
   win.webContents.on('did-fail-load', function () {
     console.log(`createWindow: did-fail-load, reload ${param.AIO_ENV} soon...`);
@@ -58,7 +62,7 @@ function createWindow() {
     // win.webContents.openDevTools();
   } else {
     win.loadURL(gerServer());
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
   }
 }
 

@@ -1,8 +1,8 @@
 {
-  "name": "allinonepc-aio",
+  "name": "propaganda",
   "version": "1.0.0",
   "private": true,
-  "description": "一体机程序",
+  "description": "一体机视频宣传客户端",
   "main": "main.electron.js",
   "scripts": {
     "watch": "vue-cli-service build --watch --aio_env=development",
